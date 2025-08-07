@@ -4,6 +4,18 @@ import { findShortestPath } from '../pathfinder.js';
 
 const router = express.Router();
 
+router.get('/resorts', async (req, res) => {
+    const { data, error } = await supabase
+        .from('ski_areas')
+        .select('id, name');
+
+    if (error) {
+        console.error("Error fetching ski areas:", error);
+        return res.status(500).json({ error: "Failed to fetch ski areas." });
+    }
+    res.json(data);
+});
+
 router.get('/resorts/:id/pois', async (req, res) => {
     const skiAreaId = parseInt(req.params.id, 10);
     if (isNaN(skiAreaId)) {
@@ -61,9 +73,9 @@ router.post('/route', async (req, res) => {
 
         const filteredEdges = graphData.edges.filter(edge => {
             // Filter by lift avoidance
-            // if (edge.type === 'lift' && avoid_lifts?.includes(edge.id)) {
-            //     return false;
-            // }
+            if (edge.type === 'lift' && avoid_lifts?.includes(edge.id)) {
+                return false;
+            }
             // Filter by difficulty
             // This requires a mapping from string ('blue') to a number (e.g., 2)
             // For now, we'll assume a simple string comparison.

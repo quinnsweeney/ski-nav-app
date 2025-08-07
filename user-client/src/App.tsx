@@ -1,29 +1,13 @@
 import {
-  Box,
-  CircularProgress,
   CssVarsProvider,
   Sheet,
-  Typography,
 } from "@mui/joy";
-import RouteDisplay from "./components/RouteDisplay";
-import RouteFinderForm from "./components/RouteFinderForm";
-import { useState } from "react";
-import type { RouteStep } from "./types";
 import { Route, BrowserRouter, Routes } from "react-router-dom";
 import ResortListPage from "./pages/ResortListPage";
 import ResortPage from "./pages/ResortPage";
 import WelcomePage from "./pages/WelcomePage";
 
 function App() {
-  const [path, setPath] = useState<RouteStep[] | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [apiError, setApiError] = useState<string | null>(null);
-
-  const handleReset = () => {
-    setPath(null);
-    setApiError(null);
-  };
-
   return (
     <BrowserRouter>
       <CssVarsProvider>
