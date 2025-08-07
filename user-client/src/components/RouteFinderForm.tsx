@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type {
   Lift,
   PointOfInterest,
@@ -55,15 +55,16 @@ export default function RouteFinderForm({
   onPathFound,
   setIsLoading,
   setApiError,
+  initialValues,
 }: RouteFinderFormProps) {
   const [pois, setPois] = useState<PointOfInterest[]>([]);
   const [lifts, setLifts] = useState<Lift[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
-  const [startPointId, setStartPointId] = useState<number | null>(null);
-  const [endPointId, setEndPointId] = useState<number | null>(null);
-  const [maxDifficulty, setMaxDifficulty] = useState<string>("blue");
-  const [avoidLifts, setAvoidLifts] = useState<number[]>([]);
+  const [startPointId, setStartPointId] = useState<number | null>(initialValues.startPointId);
+  const [endPointId, setEndPointId] = useState<number | null>(initialValues.endPointId);
+  const [maxDifficulty, setMaxDifficulty] = useState<string>(initialValues.maxDifficulty);
+  const [avoidLifts, setAvoidLifts] = useState<number[]>(initialValues.avoidLifts);
 
   useEffect(() => {
     Promise.all([
@@ -112,7 +113,12 @@ export default function RouteFinderForm({
       .post<RouteStep[]>("/route", payload)
       .then((response) => {
         if (response.data && response.data.length > 0) {
-          onPathFound(response.data);
+          onPathFound(response.data, {
+            startPointId,
+            endPointId,
+            maxDifficulty,
+            avoidLifts,
+          });
         } else {
           setApiError(
             "No route found. Please adjust your options and try again."
@@ -130,6 +136,9 @@ export default function RouteFinderForm({
       });
   };
 
+  const startValue = useMemo(() => pois.find(p => p.id === startPointId) || null, [pois, startPointId]);
+  const endValue = useMemo(() => pois.find(p => p.id === endPointId) || null, [pois, endPointId]);
+
   if (isLoadingData) {
     return (
       <Sheet sx={{ display: "flex", justifyContent: "center", p: 4 }}>
@@ -144,6 +153,7 @@ export default function RouteFinderForm({
         <FormLabel>Where are you right now?</FormLabel>
         <Autocomplete
           placeholder="Search for a location..."
+          value={startValue}
           options={pois}
           getOptionLabel={(option) => option.name || `Unnamed ${option.type}`}
           onChange={(_, newValue) => setStartPointId(newValue?.id || null)}
@@ -153,6 +163,7 @@ export default function RouteFinderForm({
       <FormControl sx={{ mb: 2 }}>
         <FormLabel>Where do you need to get to?</FormLabel>
         <Autocomplete
+          value={endValue}
           placeholder="Search for a destination..."
           options={pois}
           getOptionLabel={(option) => option.name || `Unnamed ${option.type}`}

@@ -1,4 +1,4 @@
-import { Sheet, Typography, Button } from "@mui/joy";
+import { Card, CardCover, CardContent, Typography, Button } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
 import MountainIcon from '@mui/icons-material/Landscape';
 
@@ -6,38 +6,67 @@ export default function WelcomePage() {
     const navigate = useNavigate();
 
     return (
-        <Sheet
-            sx={{
-                height: '100vh',
-                width: '100vw',
+        <Card sx={{
+            height: '100vh',
+            width: '100vw',
+            p: 0,
+            m: 0,
+            borderRadius: 0,
+            border: 'none',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+        }}>
+            <CardCover>
+                <img
+                    src="/landing-img.jpg"
+                    loading="lazy"
+                    alt="A stunning view of a snowy mountain range under a clear blue sky, representing a ski resort."
+                />
+            </CardCover>
+            <CardCover
+                sx={{
+                    background: 'linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.2) 60%)',
+                }}
+            />
+            <CardContent sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'center',
+                justifyContent: 'flex-end', 
                 alignItems: 'center',
                 textAlign: 'center',
                 gap: 2,
-                p: 2,
-                background: 'linear-gradient(170deg, #02203c, #00437c)',
+                p: { xs: 2, md: 4 },
+                pb: { xs: 8, md: 10 },
                 color: 'white',
-                position: 'fixed',
-                top: 0,
-                left: 0,
-            }}
-        >
-            <MountainIcon sx={{ fontSize: 60 }} />
-            <Typography level="h1" component="h1" sx={{ color: 'neutral.300'}}>
-                Welcome to SkiFinder
-            </Typography>
-            <Typography level="h4" sx={{ maxWidth: '500px', color: 'neutral.300' }}>
-                Your personal guide to the slopes. Find the perfect route, every time.
-            </Typography>
-            <Button
-                size="lg"
-                onClick={() => navigate('/resorts')}
-                sx={{ mt: 2 }}
-            >
-                Find Your Resort
-            </Button>
-        </Sheet>
+            }}>
+                <MountainIcon sx={{ fontSize: { xs: 50, md: 60 } , color: 'white' }} />
+                <Typography
+                    level="h1"
+                    component="h1"
+                    sx={{ fontSize: { xs: '2.5rem', md: '3.5rem' }, textShadow: '2px 2px 4px rgba(0,0,0,0.5)' , color: 'white' }}
+                >
+                    Welcome to SkiNav
+                </Typography>
+                <Typography
+                    level="h4"
+                    sx={{
+                        maxWidth: '500px',
+                        color: 'neutral.200',
+                        fontSize: { xs: '1rem', md: '1.25rem' },
+                        textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
+                    }}
+                >
+                    Your personal guide to the slopes. Find the perfect route, every time.
+                </Typography>
+                <Button
+                    size="lg"
+                    onClick={() => navigate('/resorts')}
+                    sx={{ mt: 2, py: 1.5, px: 4, fontSize: '1rem', borderRadius: 'xl' }}
+                >
+                    Find Your Resort
+                </Button>
+            </CardContent>
+        </Card>
     );
 };

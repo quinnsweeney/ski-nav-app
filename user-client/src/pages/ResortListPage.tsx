@@ -9,6 +9,7 @@ import {
   CardCover,
   CardContent,
   Typography,
+  Button,
 } from "@mui/joy";
 import { Link } from "react-router-dom";
 import slugify from "../utils/slugify";
@@ -30,6 +31,9 @@ export default function ResortListPage() {
 
     return (
         <Box sx={{ px: { xs: 0, md: 2 } }}>
+            <Button component={Link} to="/" variant="outlined" sx={{ mb: 2 }}>
+                Back to Home
+            </Button>
             <Typography level="h2" component="h1" sx={{ mb: 3, textAlign: 'center' }}>
                 Choose a Ski Area
             </Typography>
