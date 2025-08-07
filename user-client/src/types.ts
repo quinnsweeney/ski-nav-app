@@ -45,3 +45,7 @@ export interface RouteDisplayProps {
     path: RouteStep[];
     onReset: () => void;
 }
+
+export interface DeviceOrientationEventWithCompass extends DeviceOrientationEvent {
+    webkitCompassHeading?: number;
+}
