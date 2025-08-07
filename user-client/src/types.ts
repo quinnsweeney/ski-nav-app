@@ -36,9 +36,15 @@ export interface PathfindingResult {
 // --- RouteFinderForm Component ---
 export interface RouteFinderFormProps {
     resortId: number; // We'll hardcode this for now
-    onPathFound: (path: RouteStep[]) => void;
+    onPathFound: (path: RouteStep[], formState: any) => void;
     setIsLoading: (loading: boolean) => void;
     setApiError: (error: string | null) => void;
+    initialValues: {
+        startPointId: number | null;
+        endPointId: number | null;
+        maxDifficulty: string;
+        avoidLifts: number[];
+    }
 }
 
 export interface RouteDisplayProps {
