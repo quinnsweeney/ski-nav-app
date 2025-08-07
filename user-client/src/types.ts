@@ -7,6 +7,12 @@ export interface PointOfInterest {
     aliases: string[] | null;
 }
 
+export interface Resort {
+    id: number;
+    name: string;
+    location: string;
+}
+
 export interface Lift {
     id: number;
     name: string;

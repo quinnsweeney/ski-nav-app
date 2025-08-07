@@ -1,8 +1,18 @@
-import { Box, CircularProgress, CssVarsProvider, Sheet, Typography } from "@mui/joy";
+import {
+  Box,
+  CircularProgress,
+  CssVarsProvider,
+  Sheet,
+  Typography,
+} from "@mui/joy";
 import RouteDisplay from "./components/RouteDisplay";
 import RouteFinderForm from "./components/RouteFinderForm";
 import { useState } from "react";
 import type { RouteStep } from "./types";
+import { Route, BrowserRouter, Routes } from "react-router-dom";
+import ResortListPage from "./pages/ResortListPage";
+import ResortPage from "./pages/ResortPage";
+import WelcomePage from "./pages/WelcomePage";
 
 function App() {
   const [path, setPath] = useState<RouteStep[] | null>(null);
@@ -15,19 +25,46 @@ function App() {
   };
 
   return (
-    <CssVarsProvider>
-      <Sheet
-        sx={{
-          maxWidth: "500px",
-          minHeight: "90vh",
-          margin: "1rem auto",
-          padding: "1.5rem",
-          borderRadius: "12px",
-          boxShadow: "lg",
-          fontFamily: "sans-serif",
-        }}
-      >
-        <Typography
+    <BrowserRouter>
+      <CssVarsProvider>
+        <Routes>
+          <Route path="/" element={<WelcomePage />} />
+          <Route
+            path="/resorts"
+            element={
+              <Sheet
+                sx={{
+                  maxWidth: "500px",
+                  minHeight: "90vh",
+                  margin: "1rem auto",
+                  padding: "1.5rem",
+                  borderRadius: "12px",
+                  boxShadow: "lg",
+                }}
+              >
+                <ResortListPage />
+              </Sheet>
+            }
+          />
+          <Route
+            path="/:resortSlug"
+            element={
+              <Sheet
+                sx={{
+                  maxWidth: "500px",
+                  minHeight: "90vh",
+                  margin: "1rem auto",
+                  padding: "1.5rem",
+                  borderRadius: "12px",
+                  boxShadow: "lg",
+                }}
+              >
+                <ResortPage />
+              </Sheet>
+            }
+          />
+        </Routes>
+        {/* <Typography
           level="h1"
           component="h1"
           sx={{ textAlign: "center", mb: 2 }}
@@ -59,9 +96,9 @@ function App() {
             setIsLoading={setIsLoading}
             setApiError={setApiError}
           />
-        )}
-      </Sheet>
-    </CssVarsProvider>
+        )} */}
+      </CssVarsProvider>
+    </BrowserRouter>
   );
 }
 
