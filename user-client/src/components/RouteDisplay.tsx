@@ -1,21 +1,23 @@
 import {
+  Box,
   Button,
-  List,
-  ListItem,
-  ListItemDecorator,
   Sheet,
   Typography,
 } from "@mui/joy";
 import type { RouteDisplayProps, RouteStep } from "../types";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import Compass from "./Compass";
+import { getBearing, getDistance } from "../utils/geolocationHelpers";
+import useGeolocation from "../utils/useGeolocation";
 
 export default function RouteDisplay({ path, onReset }: RouteDisplayProps) {
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const { location: userLocation, error: locationError } = useGeolocation();
+
   const aggregatedPath = useMemo(() => {
     if (!path || path.length === 0) return [];
-
     const newPath: RouteStep[] = [];
     let currentStep: RouteStep | null = null;
-
     for (const step of path) {
       if (
         currentStep &&
@@ -23,82 +25,125 @@ export default function RouteDisplay({ path, onReset }: RouteDisplayProps) {
         currentStep.type === "trail" &&
         step.name === currentStep.name
       ) {
-        // If the current step is a trail and matches the previous one, aggregate it.
         currentStep.estimated_time_minutes += step.estimated_time_minutes;
-        currentStep.end_coords = step.end_coords; // Update the end coordinates
+        currentStep.end_coords = step.end_coords;
       } else {
-        // If there's a step being tracked, push it to the new path.
-        if (currentStep) {
-          newPath.push(currentStep);
-        }
-        // Start a new step.
+        if (currentStep) newPath.push(currentStep);
         currentStep = { ...step };
       }
     }
-
-    // Add the last aggregated step to the path.
-    if (currentStep) {
-      newPath.push(currentStep);
-    }
-
+    if (currentStep) newPath.push(currentStep);
     return newPath;
   }, [path]);
 
-  const getStepText = (step: RouteStep, index: number) => {
-    if (step.name === "Connector") {
-      const nextStep = aggregatedPath[index + 1];
-      if (nextStep) {
-        const verb =
-          nextStep.type === "lift" ? "Continue to the" : "Traverse to";
-        return (
-          <Typography>
-            {verb} <strong>{nextStep.name}</strong>
-          </Typography>
-        );
-      }
-      return <Typography>Follow the connector trail</Typography>;
-    }
+  const displayPath = useMemo(
+    () => aggregatedPath.filter((step) => step.name !== "Connector"),
+    [aggregatedPath]
+  );
 
+  if (displayPath.length === 0) {
     return (
-      <>
+      <Sheet>
         <Typography>
-          {step.type === "lift" ? "Take the" : "Ski down"}{" "}
-          <strong>{step.name}</strong>
+          Route calculation complete, but no displayable steps found.
         </Typography>
-        <Typography level="body-sm">
-          (About {Math.round(step.estimated_time_minutes)} minutes)
-        </Typography>
-      </>
+        <Button
+          fullWidth
+          sx={{ mt: 2 }}
+          onClick={onReset}
+          variant="outlined"
+          color="neutral"
+        >
+          Go Back
+        </Button>
+      </Sheet>
     );
+  }
+
+  const currentStep = displayPath[currentStepIndex];
+  const isLastStep = currentStepIndex === displayPath.length - 1;
+
+  const distance =
+    userLocation && currentStep
+      ? getDistance(userLocation, currentStep.end_coords)
+      : null;
+  const bearing =
+    userLocation && currentStep
+      ? getBearing(userLocation, currentStep.end_coords)
+      : 0;
+
+  const handleNext = () => {
+    if (!isLastStep) {
+      setCurrentStepIndex((prev) => prev + 1);
+    }
   };
 
-  let listIndex = 0;
+  const handlePrev = () => {
+    if (currentStepIndex > 0) {
+      setCurrentStepIndex((prev) => prev - 1);
+    }
+  };
 
   return (
     <Sheet>
-      <Typography level="h2" component="h2" sx={{ mb: 2 }}>
+      <Typography level="h2" component="h2" sx={{ mb: 2, textAlign: "center" }}>
         Your Route
       </Typography>
-      <List sx={{ "--ListItem-paddingX": "0px" }}>
-        {aggregatedPath.map((step, index) => {
-          if (step.name === "Connector" && step.estimated_time_minutes <= 1) {
-            return null;
-          }
-          listIndex++;
-          return (
-            <ListItem key={`${step.type}-${step.id}-${index}`}>
-              <ListItemDecorator>
-                <Typography sx={{ fontWeight: "bold" }}>
-                  {listIndex}.
-                </Typography>
-              </ListItemDecorator>
-              <div>{getStepText(step, index)}</div>
-            </ListItem>
-          );
-        })}
-      </List>
-      <Button fullWidth sx={{ mt: 3 }} onClick={onReset} variant="outlined">
-        Find Another Route
+
+      <Box
+        sx={{
+          p: 2,
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: "lg",
+          minHeight: "150px",
+        }}
+      >
+        <Typography level="body-sm" sx={{ textAlign: "center" }}>
+          Step {currentStepIndex + 1} of {displayPath.length}
+        </Typography>
+        <Typography
+          level="h3"
+          component="div"
+          sx={{ textAlign: "center", my: 1 }}
+        >
+          {currentStep.type === "lift" ? "Take the" : "Ski down"}{" "}
+          <strong>{currentStep.name}</strong>
+        </Typography>
+        <Typography level="body-sm" sx={{ textAlign: "center" }}>
+          (About {Math.round(currentStep.estimated_time_minutes)} minutes)
+        </Typography>
+      </Box>
+
+      {userLocation && distance !== null ? (
+        <Compass distance={distance} bearing={bearing} />
+      ) : (
+        <Typography level="body-sm" sx={{ textAlign: "center", my: 2 }}>
+          {locationError || "Getting your location..."}
+        </Typography>
+      )}
+
+      <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
+        <Button
+          fullWidth
+          onClick={handlePrev}
+          disabled={currentStepIndex === 0}
+        >
+          Previous Step
+        </Button>
+        <Button fullWidth onClick={handleNext} disabled={isLastStep}>
+          Next Step
+        </Button>
+      </Box>
+
+      <Button
+        fullWidth
+        sx={{ mt: 2 }}
+        onClick={onReset}
+        variant="outlined"
+        color="neutral"
+      >
+        End Route
       </Button>
     </Sheet>
   );
