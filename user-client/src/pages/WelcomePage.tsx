@@ -7,7 +7,7 @@ export default function WelcomePage() {
 
     return (
         <Card sx={{
-            height: '100vh',
+            height: '100dvh',
             width: '100vw',
             p: 0,
             m: 0,
