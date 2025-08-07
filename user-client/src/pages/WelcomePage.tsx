@@ -32,6 +32,9 @@ export default function WelcomePage() {
             using is free and goes to sleep after inactivity, causing some
             requests to take a long time.
           </Typography>
+          <Typography sx={{ mt: 1 }}>
+            <a href="mailto:quinnsweeney11@gmail.com">Email me</a> if you have any feedback or resort requests!
+          </Typography>
           <Button onClick={() => setOpen(false)} sx={{ mt: 2 }}>
             Got it!
           </Button>
