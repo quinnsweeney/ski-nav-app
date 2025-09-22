@@ -8,15 +8,7 @@ import {
   Tabs,
   Typography,
 } from "@mui/joy";
-import {
-  type PointOfInterest,
-  type TrailSegment,
-  type Lift,
-  type Resort,
-  type Trail,
-  type GraphLink,
-  type GraphNode,
-} from "../types";
+import { type Resort, type GraphLink, type GraphNode } from "../types";
 import PointsOfInterestManager from "./POI/POIManager";
 import LiftsManager from "./Lifts/LiftsManager";
 import TrailManager from "./Trails/TrailManager";
