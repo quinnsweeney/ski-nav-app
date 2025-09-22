@@ -24,8 +24,8 @@ export default function WelcomePage() {
           <ModalClose />
           <DialogTitle>Hey there!</DialogTitle>
           <Typography>
-            Thanks for checking out SkiNav. The data isn't fully populated yet,
-            so some routes might be missing.
+            Thanks for checking out SkiFinder. The data isn't fully populated
+            yet, so some routes might be missing.
           </Typography>
           <Typography sx={{ mt: 1 }}>
             If you encounter a long load time, be patient, the API provider I'm
@@ -33,7 +33,8 @@ export default function WelcomePage() {
             requests to take a long time.
           </Typography>
           <Typography sx={{ mt: 1 }}>
-            <a href="mailto:quinnsweeney11@gmail.com">Email me</a> if you have any feedback or resort requests!
+            <a href="mailto:quinnsweeney11@gmail.com">Email me</a> if you have
+            any feedback or resort requests!
           </Typography>
           <Button onClick={() => setOpen(false)} sx={{ mt: 2 }}>
             Got it!
@@ -89,7 +90,7 @@ export default function WelcomePage() {
               color: "white",
             }}
           >
-            Welcome to SkiNav
+            Welcome to SkiFinder
           </Typography>
           <Typography
             level="h4"
@@ -109,6 +110,15 @@ export default function WelcomePage() {
             sx={{ mt: 2, py: 1.5, px: 4, fontSize: "1rem", borderRadius: "xl" }}
           >
             Find Your Resort
+          </Button>
+          <Button
+            size="lg"
+            onClick={() => window.open("https://skiadmin.quinnsweeney.dev/")}
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{ mt: 2, py: 1.5, px: 4, fontSize: "1rem", borderRadius: "xl" }}
+          >
+            Check out the Admin Site
           </Button>
         </CardContent>
       </Card>
