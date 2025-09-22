@@ -8,23 +8,15 @@ import {
   Tabs,
   Typography,
 } from "@mui/joy";
-import {
-  type PointOfInterest,
-  type TrailSegment,
-  type Lift,
-  type Resort,
-  type Trail,
-type GraphLink,
-type GraphNode,
-} from "../types";
+import { type Resort, type GraphLink, type GraphNode } from "../types";
 import PointsOfInterestManager from "./POI/POIManager";
 import LiftsManager from "./Lifts/LiftsManager";
 import TrailManager from "./Trails/TrailManager";
 import TrailSegmentManager from "./TrailSegments/TrailSegmentManager";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import ResortVisualizer from "./ResortVisualizer";
-import adminAPI from "../api";
 import ResortMapVisualizer from "./ResortMapVisualizer";
+import { useResortData } from "../hooks/useResortData";
 
 interface ResortDetailsProps {
   resort: Resort;
@@ -32,39 +24,14 @@ interface ResortDetailsProps {
 }
 
 export default function ResortDetails({ resort, onBack }: ResortDetailsProps) {
-  const [pois, setPois] = useState<PointOfInterest[]>([]);
-  const [lifts, setLifts] = useState<Lift[]>([]);
-  const [segments, setSegments] = useState<TrailSegment[]>([]);
-  const [trails, setTrails] = useState<Trail[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const fetchData = () => {
-    setIsLoading(true);
-    Promise.all([
-      adminAPI.get<PointOfInterest[]>(
-        `/points-of-interest?ski_area_id=${resort.id}`
-      ),
-      adminAPI.get<Lift[]>(`/lifts?ski_area_id=${resort.id}`),
-      adminAPI.get<TrailSegment[]>(`/trail-segments?ski_area_id=${resort.id}`),
-      adminAPI.get<Trail[]>(`/trails?ski_area_id=${resort.id}`),
-    ])
-      .then(([poisRes, liftsRes, segmentsRes, trailsRes]) => {
-        setPois(poisRes.data);
-        setLifts(liftsRes.data);
-        setSegments(segmentsRes.data);
-        setTrails(trailsRes.data);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch resort data", err);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [resort.id]);
+  const {
+    pois,
+    lifts,
+    segments,
+    trails,
+    isLoading,
+    refetch: fetchData,
+  } = useResortData(resort);
 
   const graphData = useMemo(() => {
     const transformedNodes = pois.map((poi) => ({
@@ -81,7 +48,7 @@ export default function ResortDetails({ resort, onBack }: ResortDetailsProps) {
       lng: poi.longitude,
     })) as GraphNode[];
 
-    const liftLinks = lifts.map((lift):GraphLink => {
+    const liftLinks = lifts.map((lift): GraphLink => {
       //get lat and lng from start and end points of lift
       const startPoint = pois.find((p) => p.id === lift.start_point_id);
       const endPoint = pois.find((p) => p.id === lift.end_point_id);
@@ -103,7 +70,7 @@ export default function ResortDetails({ resort, onBack }: ResortDetailsProps) {
       };
     });
 
-    const segmentLinks = segments.map((segment):GraphLink => {
+    const segmentLinks = segments.map((segment): GraphLink => {
       //get lat and lng from start and end points of segment
       const startPoint = pois.find((p) => p.id === segment.start_point_id);
       const endPoint = pois.find((p) => p.id === segment.end_point_id);
