@@ -128,7 +128,7 @@ function PointOfInterestForm({
           <FormLabel>Type</FormLabel>
           <Select
             value={type}
-            onChange={(_, newValue) => setType(newValue || "intersection")}
+            onChange={(_, newValue) => setType(newValue || "node")}
           >
             <Option value="node">Node</Option>
             <Option value="intersection">Intersection</Option>
