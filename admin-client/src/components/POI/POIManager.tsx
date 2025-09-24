@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { PointOfInterest, Resort } from "../../types";
 import { Box, Button, List, ListItem, Sheet, Typography } from "@mui/joy";
 import PointOfInterestForm from "./POIForm";
+import POINodeForm from "./POINodeForm";
 import adminAPI from "../../api";
 
 interface PointsOfInterestManagerProps {
@@ -17,11 +18,13 @@ const PointsOfInterestManager: React.FC<PointsOfInterestManagerProps> = ({
 }) => {
   const [editingPoi, setEditingPoi] = useState<PointOfInterest | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [showNodeForm, setShowNodeForm] = useState(false);
   const isGuest = localStorage.getItem("admin_token") === "guest_token";
 
   const handleSaveSuccess = () => {
     setEditingPoi(null);
     setShowForm(false);
+    setShowNodeForm(false);
     onDataChange();
   };
 
@@ -62,10 +65,20 @@ const PointsOfInterestManager: React.FC<PointsOfInterestManagerProps> = ({
 
   return (
     <Sheet>
-      {!showForm && (
-        <Button disabled={isGuest} onClick={handleAddClick} sx={{ mb: 2 }}>
-          Add New Point of Interest
-        </Button>
+      {!showForm && !showNodeForm && (
+        <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
+          <Button disabled={isGuest} onClick={handleAddClick}>
+            Add New Point of Interest
+          </Button>
+          <Button
+            disabled={isGuest}
+            onClick={() => setShowNodeForm(true)}
+            variant="soft"
+            startDecorator="⚡"
+          >
+            Bulk Add Nodes
+          </Button>
+        </Box>
       )}
       {showForm && (
         <PointOfInterestForm
@@ -73,6 +86,13 @@ const PointsOfInterestManager: React.FC<PointsOfInterestManagerProps> = ({
           onSaveSuccess={handleSaveSuccess}
           onCancel={handleCancel}
           editingPoi={editingPoi}
+        />
+      )}
+      {showNodeForm && (
+        <POINodeForm
+          resortId={resort.id}
+          onSaveSuccess={handleSaveSuccess}
+          onCancel={() => setShowNodeForm(false)}
         />
       )}
       <List>

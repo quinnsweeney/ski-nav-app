@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@mui/joy";
 import TrailSegmentForm from "./TrailSegmentForm";
+import TrailSegmentBulkForm from "./TrailSegmentBulkForm";
 import adminAPI from "../../api";
 
 interface TrailSegmentManagerProps {
@@ -32,6 +33,7 @@ export default function TrailSegmentManager({
     null
   );
   const [showForm, setShowForm] = useState(false);
+  const [showBulkForm, setShowBulkForm] = useState(false);
   const [expandedTrails, setExpandedTrails] = useState<Set<number>>(new Set());
   const isGuest = localStorage.getItem("admin_token") === "guest_token";
 
@@ -93,6 +95,7 @@ export default function TrailSegmentManager({
   const handleCancel = () => {
     setEditingSegment(null);
     setShowForm(false);
+    setShowBulkForm(false);
     onDataChange();
   };
 
@@ -112,10 +115,20 @@ export default function TrailSegmentManager({
 
   return (
     <Sheet>
-      {!showForm && (
-        <Button onClick={handleAddClick} sx={{ mb: 2 }} disabled={isGuest}>
-          Add New Trail Segment
-        </Button>
+      {!showForm && !showBulkForm && (
+        <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
+          <Button onClick={handleAddClick} disabled={isGuest}>
+            Add New Trail Segment
+          </Button>
+          <Button
+            onClick={() => setShowBulkForm(true)}
+            disabled={isGuest}
+            variant="soft"
+            startDecorator="⚡"
+          >
+            Bulk Add Trail Segments
+          </Button>
+        </Box>
       )}
       {showForm && (
         <TrailSegmentForm
@@ -125,6 +138,20 @@ export default function TrailSegmentManager({
           onSave={handleSave}
           onCancel={handleCancel}
           editingSegment={editingSegment}
+        />
+      )}
+      {showBulkForm && (
+        <TrailSegmentBulkForm
+          trails={trails}
+          pois={pois}
+          resortId={resort.id}
+          onSave={(newSegments) => {
+            newSegments.forEach((segment) => {
+              setSegments((current) => [...current, segment]);
+            });
+            handleCancel();
+          }}
+          onCancel={handleCancel}
         />
       )}
 
