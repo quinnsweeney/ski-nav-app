@@ -3,6 +3,7 @@ import type { PointOfInterest, Resort } from "../../types";
 import { Box, Button, List, ListItem, Sheet, Typography } from "@mui/joy";
 import PointOfInterestForm from "./POIForm";
 import POINodeForm from "./POINodeForm";
+import POINodeImportForm from "./POINodeImportForm";
 import adminAPI from "../../api";
 
 interface PointsOfInterestManagerProps {
@@ -19,12 +20,14 @@ const PointsOfInterestManager: React.FC<PointsOfInterestManagerProps> = ({
   const [editingPoi, setEditingPoi] = useState<PointOfInterest | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [showNodeForm, setShowNodeForm] = useState(false);
+  const [showImportForm, setShowImportForm] = useState(false);
   const isGuest = localStorage.getItem("admin_token") === "guest_token";
 
   const handleSaveSuccess = () => {
     setEditingPoi(null);
     setShowForm(false);
     setShowNodeForm(false);
+    setShowImportForm(false);
     onDataChange();
   };
 
@@ -65,7 +68,7 @@ const PointsOfInterestManager: React.FC<PointsOfInterestManagerProps> = ({
 
   return (
     <Sheet>
-      {!showForm && !showNodeForm && (
+      {!showForm && !showNodeForm && !showImportForm && (
         <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
           <Button disabled={isGuest} onClick={handleAddClick}>
             Add New Point of Interest
@@ -77,6 +80,15 @@ const PointsOfInterestManager: React.FC<PointsOfInterestManagerProps> = ({
             startDecorator="⚡"
           >
             Bulk Add Nodes
+          </Button>
+          <Button
+            disabled={isGuest}
+            onClick={() => setShowImportForm(true)}
+            variant="soft"
+            color="neutral"
+            startDecorator="📥"
+          >
+            Import OSM Nodes
           </Button>
         </Box>
       )}
@@ -93,6 +105,13 @@ const PointsOfInterestManager: React.FC<PointsOfInterestManagerProps> = ({
           resortId={resort.id}
           onSaveSuccess={handleSaveSuccess}
           onCancel={() => setShowNodeForm(false)}
+        />
+      )}
+      {showImportForm && (
+        <POINodeImportForm
+          resortId={resort.id}
+          onSaveSuccess={handleSaveSuccess}
+          onCancel={() => setShowImportForm(false)}
         />
       )}
       <List>

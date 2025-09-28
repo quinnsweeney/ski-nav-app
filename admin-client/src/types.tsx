@@ -23,6 +23,7 @@ export interface PointOfInterest {
   latitude: number;
   longitude: number;
   aliases: string[] | null;
+  osm_id?: number;
 }
 
 export interface Lift {

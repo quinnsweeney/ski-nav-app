@@ -22,9 +22,14 @@ router.get("/resorts/:id/pois", async (req, res) => {
     return res.status(400).json({ error: "Invalid ski area ID." });
   }
 
-  const { data, error } = await supabase.rpc("get_pois_for_ski_area", {
-    p_ski_area_id: skiAreaId,
-  });
+  // const { data, error } = await supabase.rpc("get_pois_for_ski_area", {
+  //   p_ski_area_id: skiAreaId,
+  // });
+  const { data, error } = await supabase
+    .from("points_of_interest")
+    .select("*")
+    .eq("ski_area_id", skiAreaId)
+    .neq("type", "node");
 
   if (error) {
     console.error("Error fetching POIs:", error);
@@ -137,6 +142,56 @@ router.post("/route", async (req, res) => {
   } catch (error) {
     console.error("Pathfinding error:", error);
     res.status(500).json({ error: "An error occurred during pathfinding." });
+  }
+});
+
+router.post("/signup", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required." });
+  }
+
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      console.error("Signup error:", error);
+      return res.status(400).json(error);
+    }
+
+    res.status(201).json(data);
+  } catch (error) {
+    console.error("Unexpected signup error:", error);
+    res.status(500).json({ error: "An unexpected error occurred." });
+  }
+});
+
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required." });
+  }
+
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      console.error(error.message);
+      return res.status(400).json({ message: error.message });
+    }
+
+    res.status(200).json(data);
+  } catch (error) {
+    console.error("Unexpected login error:", error);
+    res.status(500).json({ error: "An unexpected error occurred." });
   }
 });
 

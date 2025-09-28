@@ -11,6 +11,7 @@ import {
 } from "@mui/joy";
 import TrailSegmentForm from "./TrailSegmentForm";
 import TrailSegmentBulkForm from "./TrailSegmentBulkForm";
+import TrailSegmentNodeImportForm from "./TrailSegmentNodeImportForm";
 import adminAPI from "../../api";
 
 interface TrailSegmentManagerProps {
@@ -34,9 +35,10 @@ export default function TrailSegmentManager({
   );
   const [showForm, setShowForm] = useState(false);
   const [showBulkForm, setShowBulkForm] = useState(false);
+  const [showNodeImportForm, setShowNodeImportForm] = useState(false);
   const [expandedTrails, setExpandedTrails] = useState<Set<number>>(new Set());
   const isGuest = localStorage.getItem("admin_token") === "guest_token";
-
+  console.log(pois.length);
   useEffect(() => {
     setSegments(initialSegments);
   }, [initialSegments]);
@@ -68,6 +70,26 @@ export default function TrailSegmentManager({
     // setShowForm(false);
   };
 
+  const handleDeleteAll = (trailId: number) => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete all segments for this trail?"
+      )
+    ) {
+      const segmentsToDelete = segments.filter((s) => s.trail_id === trailId);
+      Promise.all(
+        segmentsToDelete.map((s) =>
+          adminAPI.delete(`/trail-segments/${s.id}`).catch((err) => {
+            console.error("Failed to delete segment", err);
+            alert(`Could not delete segment ID ${s.id}.`);
+          })
+        )
+      ).then(() => {
+        onDataChange();
+      });
+    }
+  };
+
   const handleDelete = (segmentId: number) => {
     if (window.confirm("Are you sure you want to delete this segment?")) {
       adminAPI
@@ -96,6 +118,7 @@ export default function TrailSegmentManager({
     setEditingSegment(null);
     setShowForm(false);
     setShowBulkForm(false);
+    setShowNodeImportForm(false);
     onDataChange();
   };
 
@@ -115,7 +138,7 @@ export default function TrailSegmentManager({
 
   return (
     <Sheet>
-      {!showForm && !showBulkForm && (
+      {!showForm && !showBulkForm && !showNodeImportForm && (
         <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
           <Button onClick={handleAddClick} disabled={isGuest}>
             Add New Trail Segment
@@ -127,6 +150,15 @@ export default function TrailSegmentManager({
             startDecorator="⚡"
           >
             Bulk Add Trail Segments
+          </Button>
+          <Button
+            onClick={() => setShowNodeImportForm(true)}
+            disabled={isGuest}
+            variant="soft"
+            color="neutral"
+            startDecorator="📥"
+          >
+            Import Node List
           </Button>
         </Box>
       )}
@@ -142,6 +174,20 @@ export default function TrailSegmentManager({
       )}
       {showBulkForm && (
         <TrailSegmentBulkForm
+          trails={trails}
+          pois={pois}
+          resortId={resort.id}
+          onSave={(newSegments) => {
+            newSegments.forEach((segment) => {
+              setSegments((current) => [...current, segment]);
+            });
+            handleCancel();
+          }}
+          onCancel={handleCancel}
+        />
+      )}
+      {showNodeImportForm && (
+        <TrailSegmentNodeImportForm
           trails={trails}
           pois={pois}
           resortId={resort.id}
@@ -211,40 +257,52 @@ export default function TrailSegmentManager({
                 </Typography>
               </ListItemButton>
               {isExpanded && (
-                <List sx={{ pl: 2 }}>
-                  {trailSegments.map((segment) => (
-                    <ListItem
-                      key={segment.id}
-                      endAction={
-                        <Box sx={{ display: "flex", gap: 1 }}>
-                          <Button
-                            size="sm"
-                            variant="soft"
-                            color="neutral"
-                            onClick={() => handleEditClick(segment)}
-                            disabled={isGuest}
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="soft"
-                            color="danger"
-                            onClick={() => handleDelete(segment.id)}
-                            disabled={isGuest}
-                          >
-                            Delete
-                          </Button>
-                        </Box>
-                      }
-                    >
-                      <Typography level="body-sm">
-                        From: {getNameById(pois, segment.start_point_id)} &rarr;
-                        To: {getNameById(pois, segment.end_point_id)}
-                      </Typography>
-                    </ListItem>
-                  ))}
-                </List>
+                //delete all button for deleting all trail segments
+                <Box sx={{ display: "flex-column", gap: 1, mb: 1 }}>
+                  <Button
+                    size="sm"
+                    variant="soft"
+                    color="danger"
+                    onClick={() => handleDeleteAll(trail.id)}
+                    disabled={isGuest}
+                  >
+                    Delete All
+                  </Button>
+                  <List sx={{ pl: 2 }}>
+                    {trailSegments.map((segment) => (
+                      <ListItem
+                        key={segment.id}
+                        endAction={
+                          <Box sx={{ display: "flex", gap: 1 }}>
+                            <Button
+                              size="sm"
+                              variant="soft"
+                              color="neutral"
+                              onClick={() => handleEditClick(segment)}
+                              disabled={isGuest}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="soft"
+                              color="danger"
+                              onClick={() => handleDelete(segment.id)}
+                              disabled={isGuest}
+                            >
+                              Delete
+                            </Button>
+                          </Box>
+                        }
+                      >
+                        <Typography level="body-sm">
+                          From: {getNameById(pois, segment.start_point_id)}{" "}
+                          &rarr; To: {getNameById(pois, segment.end_point_id)}
+                        </Typography>
+                      </ListItem>
+                    ))}
+                  </List>
+                </Box>
               )}
             </ListItem>
           );
