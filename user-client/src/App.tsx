@@ -6,6 +6,7 @@ import { Route, BrowserRouter, Routes } from "react-router-dom";
 import ResortListPage from "./pages/ResortListPage";
 import ResortPage from "./pages/ResortPage";
 import WelcomePage from "./pages/WelcomePage";
+import EmailConfirmedPage from "./pages/EmailConfirmedPage";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <CssVarsProvider>
         <Routes>
           <Route path="/" element={<WelcomePage />} />
+          <Route path="/email-confirmed" element={<EmailConfirmedPage />} />
           <Route
             path="/resorts"
             element={
