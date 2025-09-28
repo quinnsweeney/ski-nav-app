@@ -1,5 +1,4 @@
 import { useState } from "react";
-import type { PointOfInterest } from "../../types";
 import {
   Box,
   Button,

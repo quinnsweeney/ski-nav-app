@@ -6,11 +6,9 @@ import {
   FormControl,
   FormHelperText,
   FormLabel,
-  Select,
   Sheet,
   Typography,
   Textarea,
-  Option,
   Autocomplete,
 } from "@mui/joy";
 import adminAPI from "../../api";
@@ -55,19 +53,19 @@ function TrailSegmentNodeImportForm({
     }
   };
 
-  const getPoisByNames = async (
-    names: number[]
-  ): Promise<PointOfInterest[]> => {
-    const foundPois: PointOfInterest[] = [];
-    await adminAPI
-      .post("/points-of-interest-by-names", { names })
-      .then((res) => {
-        if (res.data && Array.isArray(res.data)) {
-          foundPois.push(...res.data);
-        }
-      });
-    return foundPois;
-  };
+  // const getPoisByNames = async (
+  //   names: number[]
+  // ): Promise<PointOfInterest[]> => {
+  //   const foundPois: PointOfInterest[] = [];
+  //   await adminAPI
+  //     .post("/points-of-interest-by-names", { names })
+  //     .then((res) => {
+  //       if (res.data && Array.isArray(res.data)) {
+  //         foundPois.push(...res.data);
+  //       }
+  //     });
+  //   return foundPois;
+  // };
 
   const updatePois = async (
     startPoint: PointOfInterest,
