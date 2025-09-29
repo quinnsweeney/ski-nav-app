@@ -61,10 +61,18 @@ export default function RouteFinderForm({
   const [lifts, setLifts] = useState<Lift[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
-  const [startPointId, setStartPointId] = useState<number | null>(initialValues.startPointId);
-  const [endPointId, setEndPointId] = useState<number | null>(initialValues.endPointId);
-  const [maxDifficulty, setMaxDifficulty] = useState<string>(initialValues.maxDifficulty);
-  const [avoidLifts, setAvoidLifts] = useState<number[]>(initialValues.avoidLifts);
+  const [startPointId, setStartPointId] = useState<number | null>(
+    initialValues.startPointId
+  );
+  const [endPointId, setEndPointId] = useState<number | null>(
+    initialValues.endPointId
+  );
+  const [maxDifficulty, setMaxDifficulty] = useState<string>(
+    initialValues.maxDifficulty
+  );
+  const [avoidLifts, setAvoidLifts] = useState<number[]>(
+    initialValues.avoidLifts
+  );
 
   useEffect(() => {
     Promise.all([
@@ -136,8 +144,14 @@ export default function RouteFinderForm({
       });
   };
 
-  const startValue = useMemo(() => pois.find(p => p.id === startPointId) || null, [pois, startPointId]);
-  const endValue = useMemo(() => pois.find(p => p.id === endPointId) || null, [pois, endPointId]);
+  const startValue = useMemo(
+    () => pois.find((p) => p.id === startPointId) || null,
+    [pois, startPointId]
+  );
+  const endValue = useMemo(
+    () => pois.find((p) => p.id === endPointId) || null,
+    [pois, endPointId]
+  );
 
   if (isLoadingData) {
     return (
@@ -147,6 +161,8 @@ export default function RouteFinderForm({
     );
   }
 
+  const filteredPois = pois.filter((poi) => poi.type !== "node");
+
   return (
     <form onSubmit={handleSubmit}>
       <FormControl sx={{ mb: 2 }}>
@@ -154,7 +170,7 @@ export default function RouteFinderForm({
         <Autocomplete
           placeholder="Search for a location..."
           value={startValue}
-          options={pois}
+          options={filteredPois}
           getOptionLabel={(option) => option.name || `Unnamed ${option.type}`}
           onChange={(_, newValue) => setStartPointId(newValue?.id || null)}
           filterOptions={filterOptions}
@@ -165,7 +181,7 @@ export default function RouteFinderForm({
         <Autocomplete
           value={endValue}
           placeholder="Search for a destination..."
-          options={pois}
+          options={filteredPois}
           getOptionLabel={(option) => option.name || `Unnamed ${option.type}`}
           onChange={(_, newValue) => setEndPointId(newValue?.id || null)}
           filterOptions={filterOptions}

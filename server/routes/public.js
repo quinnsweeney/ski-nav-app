@@ -25,11 +25,13 @@ router.get("/resorts/:id/pois", async (req, res) => {
   // const { data, error } = await supabase.rpc("get_pois_for_ski_area", {
   //   p_ski_area_id: skiAreaId,
   // });
-  const { data, error } = await supabase
-    .from("points_of_interest")
-    .select("*")
-    .eq("ski_area_id", skiAreaId)
-    .neq("type", "node");
+  const { data, error } = await supabase.rpc("get_pois_for_ski_area", {
+    p_ski_area_id: skiAreaId,
+  });
+  // .from("points_of_interest")
+  // .select("*")
+  // .eq("ski_area_id", skiAreaId)
+  // .neq("type", "node");
 
   if (error) {
     console.error("Error fetching POIs:", error);
