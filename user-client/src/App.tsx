@@ -1,7 +1,4 @@
-import {
-  CssVarsProvider,
-  Sheet,
-} from "@mui/joy";
+import { CssVarsProvider, Sheet } from "@mui/joy";
 import { Route, BrowserRouter, Routes } from "react-router-dom";
 import ResortListPage from "./pages/ResortListPage";
 import ResortPage from "./pages/ResortPage";

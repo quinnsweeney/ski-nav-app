@@ -156,6 +156,9 @@ router.post("/signup", async (req, res) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: "https://skifinder.quinnsweeney.dev/email-confirmed",
+      },
     });
 
     if (error) {
@@ -191,6 +194,30 @@ router.post("/login", async (req, res) => {
     res.status(200).json(data);
   } catch (error) {
     console.error("Unexpected login error:", error);
+    res.status(500).json({ error: "An unexpected error occurred." });
+  }
+});
+
+router.post("/refresh", async (req, res) => {
+  const { refresh_token } = req.body;
+
+  if (!refresh_token) {
+    return res.status(400).json({ error: "Refresh token is required." });
+  }
+
+  try {
+    const { data, error } = await supabase.auth.refreshSession({
+      refresh_token
+    });
+
+    if (error) {
+      console.error("Error refreshing session:", error);
+      return res.status(401).json({ error: error.message });
+    }
+
+    res.json(data);
+  } catch (error) {
+    console.error("Unexpected refresh error:", error);
     res.status(500).json({ error: "An unexpected error occurred." });
   }
 });

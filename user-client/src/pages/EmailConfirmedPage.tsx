@@ -1,9 +1,4 @@
-import {
-  Card,
-  CardContent,
-  Typography,
-  Box,
-} from "@mui/joy";
+import { Card, CardContent, Typography, Box } from "@mui/joy";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 export default function EmailConfirmedPage() {
@@ -50,7 +45,7 @@ export default function EmailConfirmedPage() {
         >
           <CheckCircleIcon sx={{ fontSize: 48 }} />
         </Box>
-        
+
         <Typography
           level="h2"
           component="h1"
@@ -62,7 +57,7 @@ export default function EmailConfirmedPage() {
         >
           Email Confirmed!
         </Typography>
-        
+
         <Typography
           level="body-lg"
           sx={{
@@ -70,7 +65,8 @@ export default function EmailConfirmedPage() {
             lineHeight: 1.6,
           }}
         >
-          Your email has been successfully confirmed. You can now close this page.
+          Your email has been successfully confirmed. You can now close this
+          page.
         </Typography>
       </CardContent>
     </Card>
