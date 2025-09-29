@@ -41,7 +41,7 @@ type Difficulty =
   | "blue"
   | "blue-black"
   | "black"
-  | "double_black"
+  | "double-black"
   | "terrain-park";
 
 type DifficultyStyle = {
@@ -54,7 +54,7 @@ export const difficultyConfig: Record<Difficulty, DifficultyStyle> = {
   blue: { color: "primary", label: "Blue" },
   "blue-black": { color: "neutral", label: "Blue-Black" },
   black: { color: "neutral", label: "Black" },
-  double_black: { color: "neutral", label: "Double Black" },
+  "double-black": { color: "neutral", label: "Double Black" },
   "terrain-park": { color: "warning", label: "Terrain Park" },
 };
 

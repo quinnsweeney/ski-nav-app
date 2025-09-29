@@ -115,18 +115,30 @@ router.post("/route", async (req, res) => {
     );
 
     if (graphError) throw graphError;
+    console.log(max_difficulty);
 
     const filteredEdges = graphData.edges.filter((edge) => {
       // Filter by lift avoidance
       if (edge.type === "lift" && avoid_lifts?.includes(edge.id)) {
         return false;
       }
-      // Filter by difficulty
-      // This requires a mapping from string ('blue') to a number (e.g., 2)
-      // For now, we'll assume a simple string comparison.
-      // if (edge.type === 'trail' && edge.difficulty > max_difficulty) {
-      //     return false;
-      // }
+
+      const difficultyLevels = {
+        green: 1,
+        blue: 2,
+        "blue-black": 2.5,
+        black: 3,
+        double_black: 4,
+      };
+
+      const edgeDifficultyValue = difficultyLevels[edge.difficulty] || 0;
+      // console.log("Edge difficulty:", edge.difficulty, edgeDifficultyValue);
+      if (
+        edge.type === "trail" &&
+        edgeDifficultyValue > difficultyLevels[max_difficulty]
+      ) {
+        return false;
+      }
 
       return true;
     });
@@ -138,7 +150,7 @@ router.post("/route", async (req, res) => {
       end_point_id
     );
 
-    res.json(path);
+    res.json(path || []);
   } catch (error) {
     console.error("Pathfinding error:", error);
     res.status(500).json({ error: "An error occurred during pathfinding." });
@@ -207,7 +219,7 @@ router.post("/refresh", async (req, res) => {
 
   try {
     const { data, error } = await supabase.auth.refreshSession({
-      refresh_token
+      refresh_token,
     });
 
     if (error) {
