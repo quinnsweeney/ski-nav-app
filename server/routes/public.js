@@ -236,4 +236,28 @@ router.post("/refresh", async (req, res) => {
   }
 });
 
+router.get("/verify-token", async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ error: "Authorization header missing." });
+  }
+
+  const token = authHeader.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ error: "Token missing from header." });
+  }
+
+  try {
+    const { data, error } = await supabase.auth.getUser(token);
+    if (error || !data.user) {
+      return res.status(401).json({ error: "Invalid or expired token." });
+    }
+    console.log("Verified user:", data.user);
+    res.json({ user: data.user });
+  } catch (error) {
+    console.error("Token verification error:", error);
+    res.status(500).json({ error: "An unexpected error occurred." });
+  }
+});
+
 export default router;
