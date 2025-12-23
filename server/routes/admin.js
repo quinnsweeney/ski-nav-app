@@ -1,5 +1,12 @@
 import express from "express";
-import { supabase } from "../supabaseClient.js";
+// import { supabase } from "../supabaseClient.js";
+import { createClient } from "@supabase/supabase-js";
+import "dotenv/config";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SECRET
+);
 
 const router = express.Router();
 
